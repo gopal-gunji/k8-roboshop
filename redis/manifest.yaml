@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: redis
+  namespace: roboshop
+  # there labels are replicaset labels
+  labels:
+    project: roboshop
+    tier: db
+    component: redis
+
+spec:
+    replicas: 1
+    selector:
+    # using there labels replica set selectts the pod 
+      matchLabels:
+        project: roboshop
+        tier: ddb
+        component: redis
+    # this is pod definition, pod is subset of replica set.
+    template:
+      metadata:
+        labels:
+          project: roboshop
+          tier: db
+          component: redis
+      spec:
+        containers:
+        - name: redis
+          image: redis:7.0
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: roboshop
+spec:
+  selector:
+  # labels are used as selectors 
+    project: roboshop
+    tier: db
+    component: redis
+    
+  ports:
+  - protocol: TCP
+    port: 5679 # service port
+    targetPort: 5679 # container port
