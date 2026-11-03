@@ -15,7 +15,7 @@ spec:
     # using there labels replica set selectts the pod 
       matchLabels:
         project: roboshop
-        tier: ddb
+        tier: db
         component: redis
     # this is pod definition, pod is subset of replica set.
     template:
