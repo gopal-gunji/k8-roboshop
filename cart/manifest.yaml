@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cart
+  namespace: roboshop
+  labels:
+    project: roboshop
+    tier: backend
+    component: cart
+data:
+  REDIS_HOST: "redis"
+  CATALOGUE_HOST: "catalogue"
+  CATALOGUE_PORT: "8080"
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: cart
+  namespace: roboshop
+  # there labels are replicaset labels
+  labels:
+    project: roboshop
+    tier: backend
+    component: cart
+
+spec:
+    replicas: 1
+    selector:
+    # using there labels replica set selectts the pod 
+      matchLabels:
+        project: roboshop
+        tier: backend
+        component: cart
+    # this is pod definition, pod is subset of replica set.
+    template:
+      metadata:
+        labels:
+          project: roboshop
+          tier: backend
+          component: cart
+      spec:
+        containers:
+        - name: cart
+          image: gopalk1/cart:1.0.0  
+          imagePullPolicy: Always # safe to pull every time, if image is not present it will pull from docker hub
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          readinessProbe:
+            #httpGet:
+             # path: /health
+             # port: 8080
+            tcpSocket:
+              port: 8080
+            failureThreshold: 2
+            periodSeconds: 10
+            initialDelaySeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            failureThreshold: 2
+            periodSeconds: 10    
+          envFrom:
+          - configMapRef:
+              name: cart
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+  namespace: roboshop
+spec:
+  selector:
+  # labels are used as selectors 
+    project: roboshop
+    tier: backend
+    component: cart
+    
+  ports:
+  - protocol: TCP
+    port: 8080 # service port
+    targetPort: 8080 # container port
