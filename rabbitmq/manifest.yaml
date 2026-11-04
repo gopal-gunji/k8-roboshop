@@ -16,50 +16,50 @@ kind: Deployment
 metadata:
   name: rabbitmq
   namespace: roboshop
-  # there labels are replicaset labels
+  # these labels are replicaset labels
   labels:
     project: roboshop
     tier: db
     component: rabbitmq
-
 spec:
-    replicas: 1
-    selector:
-    # using there labels replica set selectts the pod 
-      matchLabels:
+  replicas: 1
+  selector:
+    # using these labels replica set selects the pod
+    matchLabels:
+      project: roboshop
+      tier: db
+      component: rabbitmq
+  # This is pod definition, pod is subset of replicaset
+  template:
+    metadata:
+      labels:
         project: roboshop
         tier: db
         component: rabbitmq
-    # this is pod definition, pod is subset of replica set.
-    template:
-      metadata:
-        labels:
-          project: roboshop
-          tier: db
-          component: rabbitmq
-      spec:
-        containers:
-        - name: rabbitmq
-          image: rabbitmq:3
-          envFrom:
-          - configMapRef:
-              name: rabbitmq
-
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3
+        envFrom:
+        - configMapRef:
+            name: rabbitmq
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: rabbitmq
   namespace: roboshop
-spec:
-  selector:
-  # labels are used as selectors 
+  labels:
     project: roboshop
     tier: db
     component: rabbitmq
-    
+spec:
+  selector:
+    # labels are used as selectors
+    project: roboshop
+    tier: db
+    component: rabbitmq
   ports:
   - protocol: TCP
-    port: 5672 # service port
+    port: 5672 # servie port
     targetPort: 5672 # container port

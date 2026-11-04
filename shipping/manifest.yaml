@@ -10,85 +10,85 @@ metadata:
 data:
   CART_ENDPOINT: "cart:8080"
   DB_HOST: "mysql"
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: shipping
   namespace: roboshop
-  # there labels are replicaset labels
+  # these labels are replicaset labels
   labels:
     project: roboshop
     tier: backend
     component: shipping
-
 spec:
-    replicas: 1
-    selector:
-    # using there labels replica set selectts the pod 
-      matchLabels:
+  replicas: 1
+  selector:
+    # using these labels replica set selects the pod
+    matchLabels:
+      project: roboshop
+      tier: backend
+      component: shipping
+  # This is pod definition, pod is subset of replicaset
+  template:
+    metadata:
+      labels:
         project: roboshop
         tier: backend
         component: shipping
-    # this is pod definition, pod is subset of replica set.
-    template:
-      metadata:
-        labels:
-          project: roboshop
-          tier: backend
-          component: shipping
-      spec:
-        containers:
-        - name: shipping
-          image: gopalk1/shipping:1.4.0  
-          imagePullPolicy: Always # safe to pull every time, if image is not present it will pull from docker hub
-          resources:
-            requests:
-              cpu: "350m"
-              memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "350Mi"
-          readinessProbe:
-            #httpGet:
-             # path: /health
-             # port: 8080
-            tcpSocket:
-              port: 8080
-            failureThreshold: 2
-            periodSeconds: 10
-            initialDelaySeconds: 15
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            failureThreshold: 20
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            failureThreshold: 2
-            periodSeconds: 10    
-          envFrom:
-          - configMapRef:
-              name: shipping
+    spec:
+      containers:
+      - name: shipping
+        image: gopalk1/shipping:1.4.0
+        imagePullPolicy: Always # safe to pull everytime, there may be images with same version rebuilt and pushed
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        readinessProbe:
+          # httpGet:
+          #   path: /health
+          #   port: 8080
+          tcpSocket:
+            port: 8080
+          failureThreshold: 2
+          periodSeconds: 10
+          initialDelaySeconds: 15
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          failureThreshold: 20
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          failureThreshold: 2
+          periodSeconds: 10
+        envFrom:
+        - configMapRef:
+            name: shipping
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: shipping
   namespace: roboshop
-spec:
-  selector:
-  # labels are used as selectors 
+  labels:
     project: roboshop
     tier: backend
     component: shipping
-    
+spec:
+  selector:
+    # labels are used as selectors
+    project: roboshop
+    tier: backend
+    component: shipping
   ports:
   - protocol: TCP
-    port: 8080 # service port
+    port: 8080 # servie port
     targetPort: 8080 # container port
