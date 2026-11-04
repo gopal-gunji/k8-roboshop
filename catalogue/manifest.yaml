@@ -12,7 +12,7 @@ data:
   MONGO_URL: "mongodb://mongodb:27017/catalogue"
 ---
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
   name: catalogue
   namespace: roboshop

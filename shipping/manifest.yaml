@@ -13,7 +13,7 @@ data:
 
 ---
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
   name: shipping
   namespace: roboshop
