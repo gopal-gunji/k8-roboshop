@@ -41,7 +41,7 @@ spec:
       spec:
         containers:
         - name: cart
-          image: gopalk1/cart:1.0.0  
+          image: gopalk1/cart:1.4.0  
           imagePullPolicy: Always # safe to pull every time, if image is not present it will pull from docker hub
           resources:
             requests:

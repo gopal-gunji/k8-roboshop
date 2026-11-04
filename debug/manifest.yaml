@@ -6,5 +6,5 @@ metadata:
 spec:
   containers:
   - name: debug
-    image: gopalk1/debug:1.0.0
+    image: gopalk1/debug:1.4.0
     
